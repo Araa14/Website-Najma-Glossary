@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">    
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Najma Glossary</title>
+    <link rel="icon" type="image/x-icon" href="C:/Users/Araa/Documents/SKRIPSI SIDANG MEI WISUDA AGUSTUS 2026 AAMIIN/Glosarium Website/yg ini/favicon.ico">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+
+<body>
+    <div class="animation-bg" id="animation-bg"></div>
+    <!-- TAMBAHAN: wadah partikel mengambang -->
+    <div class="floating-particles"></div>
+    
+    <div class="main-screen">
+        <div id="focus-overlay"></div>
+        
+        <header class="header">
+            <div class="navbar">
+                <div class="nav-header">
+                    <div class="nav-brand">
+                        <i class="fa-solid fa-rocket"></i>
+                        <span>Najma<span class="glossary">Glossary</span></span>
+                    </div>
+                    
+                    <button class="login-btn" id="loginBtnHeader">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+
+                    <button class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="second-navbar">
+                <div class="header-left">
+                    <a class="active" href="#home" id="btn-nav-home"><i class="fas fa-home"></i>Home</a>
+                    <a href="#glosarium" id="btn-nav-glosarium"><i class="fas fa-book"></i>Glosarium</a>
+                    <a href="#favorit" id="btn-nav-favorit"><i class="fas fa-star"></i>Favorit</a>
+                    <a href="#masukan" id="btn-nav-masukan"><i class="fas fa-comment"></i>Masukan</a>
+                </div>
+                <div class="search-box" id="searchBoxSecond" style="flex:1;">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Cari istilah astronomi, cth: Bulan, Moon, قمر">
+                </div>
+            </div>
+        </header>
+        
+        <section id="masukan-page" class="page-section hidden">
+            <div class="masukan-wrapper">
+                
+                <button type="button" id="btn-back-masukan" class="back-arrow-btn" title="Kembali ke Glosarium">
+                    <i class="fa-solid fa-angle-left"></i>
+                </button>
+                
+                <div class="masukan-box">
+                    <h2>Kirim Masukan & Saran 💬</h2>
+                    <p class="masukan-subtitle">Bantu kami menjadi lebih baik. Anda juga dapat melampirkan gambar pendukung.</p>
+                    
+                    <form id="form-masukan-real">
+                        
+                        <div class="form-group">
+                            <label for="masukan-nama">
+                                Nama <span class="optional">(Boleh anonim)</span>
+                                <span class="required-star">*</span>
+                            </label>
+                            <input type="text" id="masukan-nama" placeholder="Ex: Himmel" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="masukan-pesan">Komentar, Saran, atau Masukan
+                                <span class="required-star">*</span>
+                            </label>
+                            <textarea id="masukan-pesan" required rows="5" placeholder="Tuliskan masukan atau kendala yang Anda temukan di sini..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Lampiran Gambar <span class="optional">(Format .jpg, .png, Maks. Total 5MB)</span></label>
+                            <div class="upload-area" onclick="document.getElementById('masukan-file').click()">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                                <p>Klik untuk Pilih File Gambar</p>
+                                <input type="file" id="masukan-file" accept=".jpg, .jpeg" multiple style="display: none;">
+                            </div>
+                            <div id="file-list-preview" class="file-preview-list"></div>
+                            <div id="upload-progress-container" style="display: none; margin-top: 12px;">
+                                <div class="progress-info">
+                                    <span id="progress-text">Total: 0 MB / 5 MB</span>
+                                    <span id="progress-percent">0%</span>
+                                </div>
+                                <div class="progress-bar-bg">
+                                    <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="submit-masukan-btn">Kirim Masukan 🚀</button>
+                    </form>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="glosarium-page" class="page-section hidden">
+            <main id="main-content">
+                <div class="sort-button" id="sortingBar">
+                    <button class="alfabet" id="toggleSortType" title="Beralih Huruf">
+                        <img src="translation.png" width="20px" height="20px">
+                    </button>
+                    <div class="alfabet-filter" id="alfabetFilter">
+                    </div>
+                    <div class="entri-count" id="entriCount">
+                        📚 Total entri: ${total}
+                    </div>
+                </div>
+                <div class="dynamic-view"></div>
+            </main>
+
+            <div class="content">
+                <div id="card-container"></div>
+            </div>
+
+            <div class="nav-button">
+                <button id="btn-back" type="button" class="btn" disabled><i class="fa-solid fa-angle-left"></i></button>
+                <div id="page-numbers" class="page-numbers"></div>
+                <button id="btn-next" type="button" class="btn"><i class="fa-solid fa-angle-right"></i></button>
+            </div>
+        </section>
+
+        <section id="favorit-page" class="page-section hidden">            
+            <div class="content" style="background: transparent;">
+                <div id="fav-card-container" class="card-container"></div>
+            </div>
+
+            <div class="nav-button" id="fav-nav-button">
+                <button id="fav-btn-back" class="btn" disabled><i class="fa-solid fa-angle-left"></i></button>
+                    <div id="fav-page-numbers" class="page-numbers"></div>
+                <button id="fav-btn-next" class="btn"><i class="fa-solid fa-angle-right"></i></button>
+            </div>
+        </section>
+
+        <section id="home-page" class="page-section">
+            <div class="home-container">
+                <!-- Tombol Theme Toggle Sekunder Terintegrasi di Atas Section Home -->
+                <div class="home-theme-wrapper">
+                    <button class="login-btn" id="loginBtnHome">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+
+                    <button class="theme-toggle" id="homeThemeToggle" title="Ubah Tema">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+                <h1>Najma Glossary</h1>
+                <p>Jelajahi berbagai istilah astronomi dalam bahasa Indonesia, Arab, dan Inggris dengan mudah dan interaktif!</p>
+                
+                <div class="home-search-area">
+                    <input type="text" id="homeSearchField" class="home-search-box" placeholder="Cari istilah astronomi, cth: Bulan, Moon, قمر">
+                    <button id="homeSearchBtn" class="home-search-btn"><i class="fas fa-search"></i> Cari</button>
+                </div>
+
+                <button id="btn-mulai" class="btn" style="margin-bottom: 25px;">Mulai Jelajah</button>
+
+                <div id="homeSearchResults" class="home-results-container"></div>
+            </div>
+            
+            <div class="nav-button" id="home-nav-button">
+                <button id="home-btn-back" class="btn" disabled><i class="fa-solid fa-angle-left"></i></button>
+                    <div id="home-page-numbers" class="page-numbers"></div>
+                <button id="home-btn-next" class="btn"><i class="fa-solid fa-angle-right"></i></button>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <!-- Baris 1: Brand & Copyright -->
+                <div class="footer-row footer-row-top">
+                    <div class="footer-brand">
+                        <i class="fa-solid fa-rocket"></i>
+                        <span>Najma<span>Glossary</span></span>
+                    </div>
+                    <div class="footer-meta">
+                        <span class="footer-copy">© 2026 Najma Glossary</span>
+                        <span class="footer-fav"><i class="fas fa-star"></i> <span id="favCounter">0</span> favorit tersimpan</span>
+                    </div>
+                </div>
+                
+                <!-- Baris 2: Kontak (satu baris) -->
+                <div class="footer-row footer-row-bottom">
+                    <div class="footer-contact">
+                        <span class="footer-contact-text">
+                            Punya saran istilah astronomi baru atau menemukan kesalahan definisi? Hubungi kami melalui ruang komunikasi di:
+                        </span>
+                        <a href="mailto:najmaglossary.edu@gmail.com" class="footer-email">
+                            <i class="fas fa-envelope"></i> najmaglossary.edu@gmail.com
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modal Login / Register -->
+    <div id="loginModal" class="login-modal">
+        <div class="login-modal-content">
+            <span class="close-modal" id="closeLoginModal">&times;</span>
+            
+            <!-- Form Login -->
+            <div id="loginFormContainer">
+                <h2>Login</h2>
+                <p class="login-subtitle">Masuk ke akun Anda</p>
+                
+                <div class="social-login">
+                    <button class="social-btn google-btn" id="googleLoginBtn">
+                        <i class="fab fa-google"></i> Login dengan Google
+                    </button>
+                    <button class="social-btn email-btn" id="emailLoginBtn">
+                        <i class="fas fa-envelope"></i> Login dengan Email
+                    </button>
+                </div>
+                
+                <div class="divider">
+                    <span>atau</span>
+                </div>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginUsername">Username atau Email</label>
+                        <input type="text" id="loginUsername" placeholder="Masukkan username atau email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <!-- PERBAIKAN: dibungkus password-wrapper -->
+                        <div class="password-wrapper">
+                            <input type="password" id="loginPassword" placeholder="••••••••" required>
+                            <button type="button" class="toggle-password" data-target="loginPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn login-submit-btn">Masuk</button>
+                </form>
+                
+                <p class="switch-auth">
+                    Belum punya akun? <a href="#" id="switchToRegister">Daftar di sini</a>
+                </p>
+                <p id="loginError" class="login-error"></p>
+            </div>
+            
+            <!-- Form Register -->
+            <div id="registerFormContainer" style="display: none;">
+                <h2>Daftar</h2>
+                <p class="login-subtitle">Buat akun baru</p>
+                
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerUsername">Username</label>
+                        <input type="text" id="registerUsername" placeholder="Pilih username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input type="email" id="registerEmail" placeholder="email@gmail.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="registerPassword" placeholder="Minimal 6 karakter" required minlength="6">
+                            <button type="button" class="toggle-password" data-target="registerPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerConfirmPassword">Konfirmasi Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="registerConfirmPassword" placeholder="Ulangi password" required>
+                            <button type="button" class="toggle-password" data-target="registerConfirmPassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn login-submit-btn">Daftar</button>
+                </form>
+                
+                <p class="switch-auth">
+                    Sudah punya akun? <a href="#" id="switchToLogin">Login di sini</a>
+                </p>
+                <p id="registerError" class="login-error"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detail -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeDetailModal">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</body>
+</html>
