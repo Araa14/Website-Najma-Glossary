@@ -137,7 +137,7 @@ async function loadUserFavorites() {
         userFavorites.clear();
         return;
     }
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('favorites')
         .select('term_id')
         .eq('user_id', currentUser.id);
@@ -157,14 +157,14 @@ async function toggleFavorite(termId) {
     const isFav = userFavorites.has(termId);
     try {
         if (isFav) {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('favorites')
                 .delete()
                 .match({ user_id: currentUser.id, term_id: termId });
             if (error) throw error;
             userFavorites.delete(termId);
         } else {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('favorites')
                 .insert({ user_id: currentUser.id, term_id: termId });
             if (error) throw error;
@@ -1669,7 +1669,7 @@ document.getElementById('form-masukan-real').addEventListener('submit', async fu
         }
     }
 
-    const { error } = await supabase
+    const { error } = await supabaseClient
         .from('masukan')
         .insert({
             user_id: currentUser ? currentUser.id : null,
