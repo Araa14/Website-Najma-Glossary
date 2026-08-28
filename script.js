@@ -27,6 +27,38 @@ const FAV_KARTU_PER_HALAMAN = 18;
 const listAlfabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
 const listHijaiyah = ["ا","ب","ت","ث","ج","ح","خ","د","ذ","ر","ز","س","ش","ص","ض","ط","ظ","ع","غ","ف","ق","ك","ل","م","ن","و","ه","لا","ء","ي"];
 
+
+// ===================== FUNGSI NOTIFIKASI =====================
+function showNotification(message, type = 'info', duration = 4000) {
+    const container = document.getElementById('notification-container');
+    if (!container) return;
+    const notif = document.createElement('div');
+    notif.className = `notification notification-${type}`;
+    const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-exclamation-circle',
+        info: 'fa-info-circle'
+    };
+    notif.innerHTML = `
+        <i class="fas ${icons[type] || icons.info} notif-icon"></i>
+        <span>${message}</span>
+        <button class="notif-close">&times;</button>
+    `;
+    container.appendChild(notif);
+    const closeBtn = notif.querySelector('.notif-close');
+    closeBtn.addEventListener('click', () => {
+        notif.classList.add('fade-out');
+        setTimeout(() => notif.remove(), 400);
+    });
+    setTimeout(() => {
+        if (notif.parentNode) {
+            notif.classList.add('fade-out');
+            setTimeout(() => notif.remove(), 400);
+        }
+    }, duration);
+}
+
+
 // ===================== DOM REFS =====================
 const container = document.getElementById("card-container");
 const btnBack = document.getElementById("btn-back");
@@ -137,7 +169,7 @@ async function loadUserFavorites() {
         userFavorites.clear();
         return;
     }
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabase
         .from('favorites')
         .select('term_id')
         .eq('user_id', currentUser.id);
@@ -151,20 +183,20 @@ async function loadUserFavorites() {
 
 async function toggleFavorite(termId) {
     if (!currentUser) {
-        alert('Silakan login untuk menambahkan favorit.');
+        showNotification('Silakan login untuk menambahkan favorit.');
         return;
     }
     const isFav = userFavorites.has(termId);
     try {
         if (isFav) {
-            const { error } = await supabaseClient
+            const { error } = await supabase
                 .from('favorites')
                 .delete()
                 .match({ user_id: currentUser.id, term_id: termId });
             if (error) throw error;
             userFavorites.delete(termId);
         } else {
-            const { error } = await supabaseClient
+            const { error } = await supabase
                 .from('favorites')
                 .insert({ user_id: currentUser.id, term_id: termId });
             if (error) throw error;
@@ -176,7 +208,7 @@ async function toggleFavorite(termId) {
         renderHomeResults();
         updateFavCounter();
     } catch (error) {
-        alert('Gagal mengubah favorit: ' + error.message);
+        showNotification('Gagal mengubah favorit: ' + error.message);
     }
 }
 
@@ -199,6 +231,44 @@ function updateLoginButtons() {
             btn.innerHTML = `<i class="fas fa-sign-in-alt"></i> Login`;
             btn.style.borderColor = 'var(--glass-border)';
         });
+    }
+}
+
+// ===================== SETUP DROPDOWN LOGIN =====================
+function setupLoginButton(btnId, dropdownId) {
+    const btn = document.getElementById(btnId);
+    const dropdown = document.getElementById(dropdownId);
+    if (!btn) return;
+
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (currentUser) {
+            if (dropdown) dropdown.classList.toggle('show');
+        } else {
+            openLoginModal();
+        }
+    });
+
+    if (dropdown) {
+        const logoutItem = dropdown.querySelector('.logout-item');
+        if (logoutItem) {
+            logoutItem.addEventListener('click', function(e) {
+                e.stopPropagation();
+                signOut().then(() => {
+                    currentUser = null;
+                    userFavorites.clear();
+                    updateLoginButtons();
+                    renderApp();
+                    renderFavoritPage();
+                    renderHomeResults();
+                    updateFavCounter();
+                    showNotification('Anda berhasil logout.', 'info');
+                }).catch(err => {
+                    showNotification('Gagal logout: ' + err.message, 'error');
+                });
+                dropdown.classList.remove('show');
+            });
+        }
     }
 }
 
@@ -230,8 +300,6 @@ function closeModalLogin() {
     loginModal.classList.remove('active');
 }
 
-loginBtnHeader.addEventListener('click', openLoginModal);
-loginBtnHome.addEventListener('click', openLoginModal);
 closeLoginModal.addEventListener('click', closeModalLogin);
 loginModal.addEventListener('click', (e) => {
     if (e.target === loginModal) closeModalLogin();
@@ -317,7 +385,7 @@ registerForm.addEventListener('submit', async (e) => {
     }
     try {
         await signUp(email, password, username);
-        alert('✅ Pendaftaran berhasil! Silakan login.');
+        showNotification('✅ Pendaftaran berhasil! Silakan login.');
         switchToLogin.click();
     } catch (error) {
         registerError.textContent = '❌ ' + error.message;
@@ -335,7 +403,7 @@ googleLoginBtn.addEventListener('click', async () => {
         await signInWithGoogle();
         closeModalLogin();
     } catch (error) {
-        alert('Google login gagal: ' + error.message);
+        showNotification('Google login gagal: ' + error.message);
     }
 });
 
@@ -1179,7 +1247,7 @@ function tampilkanHalaman(dataTerfilter) {
                 icon.className = 'fas fa-check';
                 setTimeout(() => { icon.className = 'fas fa-copy'; }, 1500);
             }).catch(() => {
-                alert('Gagal menyalin teks. Coba lagi.');
+                showNotification('Gagal menyalin teks. Coba lagi.');
             });
         });
         const linkBtn = card.querySelector('.link-btn');
@@ -1188,7 +1256,7 @@ function tampilkanHalaman(dataTerfilter) {
             if (data.link) {
                 window.open(data.link, '_blank');
             } else {
-                alert('Tidak ada link tersedia.');
+                showNotification('Tidak ada link tersedia.');
             }
         });
         card.addEventListener("click", (e) => {
@@ -1303,7 +1371,7 @@ function renderFavoritPage() {
                 icon.className = 'fas fa-check';
                 setTimeout(() => { icon.className = 'fas fa-copy'; }, 1500);
             }).catch(() => {
-                alert('Gagal menyalin teks. Coba lagi.');
+                showNotification('Gagal menyalin teks. Coba lagi.');
             });
         });
     });
@@ -1316,7 +1384,7 @@ function renderFavoritPage() {
             if (item.link) {
                 window.open(item.link, '_blank');
             } else {
-                alert('Tidak ada link tersedia.');
+                showNotification('Tidak ada link tersedia.');
             }
         });
     });
@@ -1446,7 +1514,7 @@ function renderHomeResults() {
                 icon.className = 'fas fa-check';
                 setTimeout(() => { icon.className = 'fas fa-copy'; }, 1500);
             }).catch(() => {
-                alert('Gagal menyalin teks. Coba lagi.');
+                showNotification('Gagal menyalin teks. Coba lagi.');
             });
         });
 
@@ -1456,7 +1524,7 @@ function renderHomeResults() {
             if (data.link) {
                 window.open(data.link, '_blank');
             } else {
-                alert('Tidak ada link tersedia.');
+                showNotification('Tidak ada link tersedia.');
             }
         });
 
@@ -1615,7 +1683,7 @@ fileInput.addEventListener('change', function(e) {
     const totalMB = totalBytes / (1024 * 1024);
     
     if (totalBytes > MAX_SIZE_BYTES) {
-        alert(`❌ Gagal: Total ukuran file Anda (${totalMB.toFixed(2)} MB) melebihi batas maksimal ${MAX_SIZE_MB} MB!`);
+        showNotification(`❌ Gagal: Total ukuran file Anda (${totalMB.toFixed(2)} MB) melebihi batas maksimal ${MAX_SIZE_MB} MB!`);
         this.value = '';
         setInputFiles(selectedFiles);
         renderFileList();
@@ -1641,7 +1709,7 @@ document.getElementById('form-masukan-real').addEventListener('submit', async fu
     const files = fileInput.files;
 
     if (!nama || !pesan) {
-        alert('Nama dan pesan wajib diisi.');
+        showNotification('Nama dan pesan wajib diisi.');
         submitBtn.disabled = false;
         submitBtn.textContent = 'Kirim Masukan 🚀';
         return;
@@ -1657,7 +1725,7 @@ document.getElementById('form-masukan-real').addEventListener('submit', async fu
                 .from('masukan')
                 .upload(fileName, file);
             if (error) {
-                alert('Gagal upload file: ' + error.message);
+                showNotification('Gagal upload file: ' + error.message);
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Kirim Masukan 🚀';
                 return;
@@ -1669,7 +1737,7 @@ document.getElementById('form-masukan-real').addEventListener('submit', async fu
         }
     }
 
-    const { error } = await supabaseClient
+    const { error } = await supabase
         .from('masukan')
         .insert({
             user_id: currentUser ? currentUser.id : null,
@@ -1679,9 +1747,9 @@ document.getElementById('form-masukan-real').addEventListener('submit', async fu
         });
 
     if (error) {
-        alert('Gagal mengirim masukan: ' + error.message);
+        showNotification('Gagal mengirim masukan: ' + error.message);
     } else {
-        alert('Terima kasih! Masukan Anda berhasil dikirim. ✨');
+        showNotification('Terima kasih! Masukan Anda berhasil dikirim. ✨');
         this.reset();
         selectedFiles = [];
         setInputFiles(selectedFiles);
@@ -1937,7 +2005,20 @@ loadSession().then(() => {
     gantiHalaman(halamanHome, navLinkHome);
     if (footerElement) footerElement.style.display = 'block';
     updateFavCounter();
-    createParticles('.floating-particles', 25);
+    createParticles('.floating-particles', 30);
+
+    // Setup dropdown login
+    setupLoginButton('loginBtnHeader', 'loginDropdownHeader');
+    setupLoginButton('loginBtnHome', 'loginDropdownHome');
+
+    // Tutup dropdown jika klik di luar
+    document.addEventListener('click', function(e) {
+        document.querySelectorAll('.login-dropdown .dropdown-content').forEach(dd => {
+            if (!dd.parentElement.contains(e.target)) {
+                dd.classList.remove('show');
+            }
+        });
+    });
 });
 
 document.getElementById('focus-overlay').addEventListener('click', function(e) {
