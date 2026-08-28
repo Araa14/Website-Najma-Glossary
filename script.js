@@ -30,8 +30,25 @@ const listHijaiyah = ["ا","ب","ت","ث","ج","ح","خ","د","ذ","ر","ز","س
 
 // ===================== FUNGSI NOTIFIKASI =====================
 function showNotification(message, type = 'info', duration = 4000) {
-    const container = document.getElementById('notification-container');
-    if (!container) return;
+    let container = document.getElementById('notification-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'notification-container';
+        container.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 350px;
+            width: 100%;
+            pointer-events: none;
+        `;
+        document.body.appendChild(container);
+    }
+
     const notif = document.createElement('div');
     notif.className = `notification notification-${type}`;
     const icons = {
@@ -155,6 +172,7 @@ async function loadSession() {
         userFavorites.clear();
     }
     updateLoginButtons();
+    updateFavoriteIcons();
     renderApp();
     renderFavoritPage();
     renderHomeResults();
@@ -169,6 +187,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
         userFavorites.clear();
     }
     updateLoginButtons();
+    updateFavoriteIcons();
     renderApp();
     renderFavoritPage();
     renderHomeResults();
@@ -193,7 +212,7 @@ async function loadUserFavorites() {
 
 async function toggleFavorite(termId) {
     if (!currentUser) {
-        showNotification('Silakan login untuk menambahkan favorit.');
+        showNotification('Silakan login untuk menambahkan favorit.', 'info');
         return;
     }
     const isFav = userFavorites.has(termId);
@@ -212,13 +231,11 @@ async function toggleFavorite(termId) {
             if (error) throw error;
             userFavorites.add(termId);
         }
-        // Update UI
-        renderApp();
-        renderFavoritPage();
-        renderHomeResults();
+
+        updateFavoriteIcons();
         updateFavCounter();
     } catch (error) {
-        showNotification('Gagal mengubah favorit: ' + error.message);
+        showNotification('Gagal mengubah favorit: ' + error.message, 'error');
     }
 }
 
@@ -2072,4 +2089,18 @@ function createParticles(containerSelector, count = 20, particleClass = 'particl
         particle.style.opacity = Math.random() * 0.5 + 0.2;
         container.appendChild(particle);
     }
+}
+
+// ===================== FUNGSI UPDATE IKON FAVORIT =====================
+function updateFavoriteIcons() {
+    document.querySelectorAll('.fav-star').forEach(star => {
+        const id = parseInt(star.dataset.id);
+        if (userFavorites.has(id)) {
+            star.className = 'fas fa-star fav-star';
+            star.setAttribute('aria-label', 'Hapus dari favorit');
+        } else {
+            star.className = 'far fa-star fav-star';
+            star.setAttribute('aria-label', 'Tambahkan ke favorit');
+        }
+    });
 }
