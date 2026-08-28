@@ -2007,18 +2007,22 @@ html.dark .google-btn {
 /* alert or notifikasi di ponsel */
 @media (max-width: 600px) {
   #notification-container {
-    right: 10px;
-    left: 10px;
-    bottom: 10px;
-    max-width: calc(100% - 20px);
+    position: fixed;
+    bottom: 20px;
+    left: 50% !important;
+    transform: translateX(-50%);
+    max-width: 90%;
     width: auto;
     gap: 8px;
+    z-index: 99999;
+    pointer-events: none;
   }
   .notification {
     font-size: 0.85rem;
     padding: 12px 16px;
     border-radius: 10px;
     word-break: break-word;
+    pointer-events: auto;
   }
   .notification .notif-icon {
     font-size: 1.2rem;
