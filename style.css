@@ -1857,3 +1857,149 @@ html.dark .google-btn {
     .page-num-btn { padding: 4px 6px; font-size: 10px; min-width: 26px; height: 26px; }
     .btn { padding: 6px 12px; font-size: 10px; }
 }
+
+
+@media (max-width: 768px) {
+    .sort-button {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 6px;
+        padding: 0 10px;
+        height: auto;
+        min-height: 50px;
+        margin-top: 10px;
+        width: 100%;
+    }
+    .alfabet {
+        flex: 0 0 40px;
+        width: 40px;
+        height: 40px;
+        margin: 0;
+    }
+    .alfabet-filter {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        height: 40px;
+        overflow-x: auto;
+        padding: 0 8px;
+        gap: 4px;
+        background: var(--glass-bg);
+        border-radius: 50px;
+        border: 1px solid var(--glass-border);
+        -webkit-overflow-scrolling: touch;
+    }
+    .alfabet-filter::-webkit-scrollbar {
+        display: none;
+    }
+    .letter-btn {
+        flex-shrink: 0;
+        width: 30px;
+        height: 30px;
+        font-size: 12px;
+    }
+    .entri-count {
+        margin: 6px auto 0;
+        width: auto;
+        padding: 0 14px;
+        height: 32px;
+        font-size: 11px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: var(--glass-bg);
+        border-radius: 50px;
+        border: 1px solid var(--glass-border);
+        flex-shrink: 0;
+    }
+
+    #card-container,
+    #fav-card-container,
+    .home-results-container {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+        gap: 12px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    .content {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    .home-container {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    .masukan-wrapper {
+        flex-direction: column;
+        padding: 16px 12px;
+        min-height: 70vh;
+        gap: 12px;
+        align-items: stretch;
+        justify-content: flex-start;
+    }
+    .back-arrow-btn {
+        order: 2;
+        align-self: center;
+        width: 44px;
+        height: 44px;
+        font-size: 1.1rem;
+        margin-top: 8px;
+    }
+    .masukan-box {
+        order: 1;
+        max-width: 100%;
+        padding: 24px 18px;
+        border-radius: 18px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+@media (max-width: 480px) {
+    .alfabet-filter {
+        height: 34px;
+        padding: 0 6px;
+        gap: 3px;
+    }
+    .letter-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 10px;
+    }
+    .entri-count {
+        height: 28px;
+        font-size: 10px;
+        padding: 0 10px;
+    }
+    #card-container,
+    #fav-card-container,
+    .home-results-container {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+        gap: 10px;
+    }
+    .masukan-box {
+        padding: 18px 14px;
+    }
+    .masukan-box h2 {
+        font-size: 1.2rem;
+    }
+    .back-arrow-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+    #card-container,
+    #fav-card-container,
+    .home-results-container {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
