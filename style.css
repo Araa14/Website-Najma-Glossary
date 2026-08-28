@@ -2003,3 +2003,27 @@ html.dark .google-btn {
         padding-right: 16px;
     }
 }
+
+/* alert or notifikasi di ponsel */
+@media (max-width: 600px) {
+  #notification-container {
+    right: 10px;
+    left: 10px;
+    bottom: 10px;
+    max-width: calc(100% - 20px);
+    width: auto;
+    gap: 8px;
+  }
+  .notification {
+    font-size: 0.85rem;
+    padding: 12px 16px;
+    border-radius: 10px;
+    word-break: break-word;
+  }
+  .notification .notif-icon {
+    font-size: 1.2rem;
+  }
+  .notification .notif-close {
+    font-size: 1rem;
+  }
+}
