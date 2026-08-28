@@ -123,6 +123,16 @@ async function signIn(email, password) {
     return data;
 }
 
+async function getEmailByUsername(username) {
+    const { data, error } = await supabaseClient
+        .from('profiles')
+        .select('email')
+        .eq('username', username)
+        .maybeSingle();
+    if (error || !data) return null;
+    return data.email;
+}
+
 async function signInWithGoogle() {
     const { data, error } = await supabaseClient.auth.signInWithOAuth({ provider: 'google' });
     if (error) throw error;
@@ -338,11 +348,28 @@ loginForm.addEventListener('submit', async (e) => {
     loginError.style.display = 'none';
     loginError.classList.remove('visible');
 
-    const email = loginUsername.value.trim();
-    const password = loginPassword.value.trim();
+    let input = loginUsername.value.trim();
+    let password = loginPassword.value.trim();
+
+    let email = input;
+    if (!input.includes('@')) {
+        const foundEmail = await getEmailByUsername(input);
+        if (foundEmail) {
+            email = foundEmail;
+        } else {
+            loginError.textContent = '❌ Username tidak ditemukan.';
+            loginError.style.display = 'block';
+            loginError.classList.add('visible');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Masuk';
+            return;
+        }
+    }
+
     try {
         await signIn(email, password);
         closeModalLogin();
+        showNotification('Login berhasil! Selamat datang.', 'success');
     } catch (error) {
         loginError.textContent = '❌ ' + error.message;
         loginError.style.display = 'block';
