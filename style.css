@@ -1647,3 +1647,77 @@ html.dark .google-btn {
 .masukan-subtitle {
     margin-bottom: 30px;
 }
+
+
+
+/* ===== NOTIFICATION CUSTOM ===== */
+.notification {
+    background: var(--card-bg-focused);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    color: var(--text-main);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideInRight 0.4s ease;
+    position: relative;
+    pointer-events: auto;
+}
+.notification-success { border-left: 4px solid #22c55e; }
+.notification-error { border-left: 4px solid #ef4444; }
+.notification-info { border-left: 4px solid var(--accent-color); }
+.notification .notif-icon { font-size: 1.4rem; }
+.notification .notif-close {
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    margin-left: auto;
+    padding: 0 4px;
+}
+.notification .notif-close:hover { color: var(--accent-color); }
+
+@keyframes slideInRight {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.notification.fade-out { animation: fadeOut 0.4s ease forwards; }
+@keyframes fadeOut { to { opacity: 0; transform: translateX(120%); } }
+
+/* ===== DROPDOWN LOGOUT ===== */
+.login-dropdown { position: relative; display: inline-block; }
+.login-dropdown .dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background: var(--card-bg-focused);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    min-width: 140px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    z-index: 1000;
+    overflow: hidden;
+}
+.login-dropdown .dropdown-content.show { display: block; }
+.login-dropdown .dropdown-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-main);
+    transition: background 0.2s;
+    border: none;
+    background: transparent;
+    width: 100%;
+    font-size: 0.95rem;
+}
+.login-dropdown .dropdown-item:hover { background: rgba(255,255,255,0.1); }
+.login-dropdown .dropdown-item.logout-item { color: #ef4444; }
+.login-dropdown .dropdown-item.logout-item:hover { background: #ef4444; color: white; }
