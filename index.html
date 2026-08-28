@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Najma Glossary</title>
+    <link rel="icon" type="image/x-icon" href="C:/Users/Araa/Documents/SKRIPSI SIDANG MEI WISUDA AGUSTUS 2026 AAMIIN/Glosarium Website/yg ini/favicon.ico">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
@@ -26,9 +27,14 @@
                         <span>Najma<span class="glossary">Glossary</span></span>
                     </div>
                     
-                    <button class="login-btn" id="loginBtnHeader">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </button>
+                    <div class="login-dropdown">
+                        <button class="login-btn" id="loginBtnHeader">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        <div class="dropdown-content" id="loginDropdownHeader">
+                            <button class="dropdown-item logout-item" data-action="logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                        </div>
+                    </div>
 
                     <button class="theme-toggle" id="themeToggle">
                         <i class="fas fa-moon"></i>
@@ -146,9 +152,15 @@
             <div class="home-container">
                 <!-- Tombol Theme Toggle Sekunder Terintegrasi di Atas Section Home -->
                 <div class="home-theme-wrapper">
-                    <button class="login-btn" id="loginBtnHome">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </button>
+
+                    <div class="login-dropdown">
+                        <button class="login-btn" id="loginBtnHome">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                        <div class="dropdown-content" id="loginDropdownHome">
+                            <button class="dropdown-item logout-item" data-action="logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                        </div>
+                    </div>
 
                     <button class="theme-toggle" id="homeThemeToggle" title="Ubah Tema">
                         <i class="fas fa-moon"></i>
@@ -194,9 +206,11 @@
                         <span class="footer-contact-text">
                             Punya saran istilah astronomi baru atau menemukan kesalahan definisi? Hubungi kami melalui ruang komunikasi di:
                         </span>
-                        <a href="mailto:najmaglossary.edu@gmail.com" class="footer-email">
+
+                        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=najmaglossary.edu@gmail.com" target="_blank" class="footer-email">
                             <i class="fas fa-envelope"></i> najmaglossary.edu@gmail.com
                         </a>
+
                     </div>
                 </div>
             </div>
