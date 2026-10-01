@@ -1,9 +1,7 @@
-// ===================== KONFIGURASI SUPABASE =====================
 const SUPABASE_URL = 'https://ygwrhsptqkyjljdmskwd.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable__eotng_5tTqAdiH_m3_U_w_OUWUMbtS';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-// ===================== STATE =====================
 let currentUser = null;
 let userFavorites = new Set();
 
@@ -11,6 +9,7 @@ let halamanSekarang = 1;
 let modeSortHuruf = "latin";
 let hurufTerpilih = null;
 let kataKunciPencarian = "";
+let kategoriTerpilih = [];
 let savedScrollY = 0;
 
 let favHalamanSekarang = 1;
@@ -28,7 +27,55 @@ const listAlfabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O"
 const listHijaiyah = ["ا","ب","ت","ث","ج","ح","خ","د","ذ","ر","ز","س","ش","ص","ض","ط","ظ","ع","غ","ف","ق","ك","ل","م","ن","و","ه","لا","ء","ي"];
 
 
-// ===================== FUNGSI NOTIFIKASI =====================
+// ===================== DAFTAR KATEGORI ASTRONOMI =====================
+const KATEGORI_ASTRONOMI = [
+    {
+        key: 'bintang', label: 'Bintang', emoji: '⭐',
+        keywords: ['bintang','supernova','nova','pulsar','quasar','sirius','vega','polaris','aldebaran','antares','betelgeuse','rigel','canopus','capella','procyon','arcturus','spica','regulus','altair','deneb','raksasa merah','katai putih','neutron','matahari','achernar','adhara','albireo','algol','alioth','almach','alphard','alpheratz','bellatrix','hamal','izar','mira','mirach','mirfak','mizar','nekkar','pollux','rasalhague','sadr','saiph','schedar','sheratan','unukalhai','vindemiatrix','wezen','zosma','sadalmelik','sadalsuud','ancha','albali','skat']
+    },
+    {
+        key: 'galaksi', label: 'Galaksi & Nebula', emoji: '🌌',
+        keywords: ['galaksi','nebula','bimasakti','magellan','milky way','dwarf galaxy','andromeda']
+    },
+    {
+        key: 'rasi', label: 'Rasi Bintang', emoji: '🌠',
+        keywords: ['rasi','orion','ursa','pegasus','perseus','cassiopeia','centaurus','cygnus','draco','aquila','aquarius','aries','cancer','capricorn','gemini','libra','pisces','sagittarius','scorpio','taurus','virgo','zodiak','pavo','columba','corvus','crux','delphinus','dorado','eridanus','grus','hydra','hydrus','lepus','lupus','lyra','monoceros','ophiuchus','puppis','sagitta','serpens','telescopium','triangulum','vela','volans','vulpecula','caelum','chamaeleon','circinus','fornax','horologium','indus','lacerta','mensa','microscopium','norma','octans','pictor','reticulum','sculptor','sextans','tucana','antinous','antlia','carina','cetus','coma','crater','equuleus','lynx','musca','phoenix','hercules']
+    },
+    {
+        key: 'planet', label: 'Planet & Bulan', emoji: '🪐',
+        keywords: ['planet','merkurius','venus','mars','jupiter','saturnus','uranus','neptunus','pluto','eksoplanet','asteroid','planetoid','triton','bumi','bulan','io','kuiper','oort','kuper']
+    },
+    {
+        key: 'fenomena', label: 'Fenomena Langit', emoji: '✨',
+        keywords: ['gerhana','aurora','ekuinoks','titik balik','meteor','komet','okultasi','konjungsi','oposisi','transit','halo','pelangi','suar','angin matahari','geomagnetik','bintik matahari','pasang surut','purnama','sabit','kuartal','manazil','presesi','nutasi','emersi','imersi','sizigi','syzygy','bolide','cahaya zodiak']
+    },
+    {
+        key: 'alat', label: 'Alat Observasi', emoji: '🔭',
+        keywords: ['teleskop','astrolab','sextant','mikrometer','spektroskop','fotometer','kompas','jam matahari','observatorium','planetarium','gnomon','heliometer','helioskop','kronograf','kronometer','mikroskop','teropong','binokular','kuadran','mizwalah','sundial']
+    },
+    {
+        key: 'misi', label: 'Misi & Antariksa', emoji: '🚀',
+        keywords: ['apollo','satelit','rover','roket','pesawat antariksa','stasiun antariksa','penjelajah','spacecraft','astronaut','sampah antariksa','cuaca antariksa','luar angkasa','antariksa']
+    },
+    {
+        key: 'konsep', label: 'Konsep & Teori', emoji: '📚',
+        keywords: [] // fallback
+    }
+];
+
+// Fungsi klasifikasi otomatis: tentukan kategori sebuah istilah
+function kategorikanIstilah(item) {
+    const teks = (item.indo + ' ' + item.inggris).toLowerCase();
+    for (const kat of KATEGORI_ASTRONOMI) {
+        if (kat.key === 'konsep') continue;
+        for (const kw of kat.keywords) {
+            if (teks.includes(kw)) return kat.key;
+        }
+    }
+    return 'konsep';
+}
+
+
 function showNotification(message, type = 'info', duration = 4000) {
     let container = document.getElementById('notification-container');
     if (!container) {
@@ -673,7 +720,7 @@ const termsData = [
     { id: 202, arab: "انفجار أشعة غاما", transliterasi: "Infijār Ashshi'at Ghāmā", indo: "Ledakan Sinar Gamma", inggris: "Gamma Ray Burst", definisi: "Ledakan energi sinar gamma paling dahsyat di alam semesta.", link: "https://id.wikipedia.org/wiki/Ledakan_sinar_gamma", huruf: "L", hurufHijaiyah: "ا" },
     { id: 203, arab: "الكرة الغازية المحيطة", transliterasi: "al-Kurah al-Ghāziyyah al-Muḥīṭah", indo: "Selubung Gas", inggris: "Gaseous envelope", definisi: "Lapisan gas yang menyelimuti bintang atau planet.", link: "https://en.wikipedia.org/wiki/Gaseous_envelope", huruf: "S", hurufHijaiyah: "ك" },
     { id: 204, arab: "مضاعفة", transliterasi: "Muḍā'afah", indo: "Penggandaan", inggris: "Gemination", definisi: "Pengulangan atau penggandaan fenomena langit.", link: "https://en.wikipedia.org/wiki/Gemination", huruf: "P", hurufHijaiyah: "م" },
-    { id: 205, arab: "الجوزاء", transliterasi: "al-Jawzā'", indo: "Gemini", inggris: "Gemini, The Twins", definisi: "Rasi zodiak kembar yang berisi bintang Castor dan Pollux.", link: "https://id.wikipedia.org/wiki/Gemini_(rasi_bintang)", huruf: "G", hurufHijaiyah: "ج" },
+    { id: 205, arab: "الجوزاء", transliterasi: "al-Jawzā'", indo: "Gemini", inggris: "Gemini, The Twins", definisi: "Rasi zodiak kembar.", link: "https://id.wikipedia.org/wiki/Gemini_(rasi_bintang)", huruf: "G", hurufHijaiyah: "ج" },
     { id: 206, arab: "العرض المركزي", transliterasi: "al-ʿArḍ al-Markazī", indo: "Lintang Geosentris", inggris: "Geocentric latitude", definisi: "Sudut lintang suatu titik dilihat dari pusat Bumi.", link: "https://en.wikipedia.org/wiki/Geocentric_latitude", huruf: "L", hurufHijaiyah: "ع" },
     { id: 207, arab: "علم قياس الارض", transliterasi: "ʿIlm Qiyās al-Arḍ", indo: "Geodesi", inggris: "Geodesy", definisi: "Ilmu pengukuran dan pemetaan permukaan Bumi.", link: "https://id.wikipedia.org/wiki/Geodesi", huruf: "G", hurufHijaiyah: "ع" },
     { id: 208, arab: "العرض الجغرافي", transliterasi: "al-ʿArḍ al-Jughrāfī", indo: "Lintang Geografis", inggris: "Geographical latitude", definisi: "Jarak sudut suatu titik dari ekuator Bumi.", link: "https://id.wikipedia.org/wiki/Lintang_geografis", huruf: "L", hurufHijaiyah: "ع" },
@@ -780,7 +827,7 @@ const termsData = [
     { id: 299, arab: "الشَّلياق", transliterasi: "ash-Shilliyāq", indo: "Lyra", inggris: "Lyra", definisi: "Rasi kecil berisi bintang Vega.", link: "https://id.wikipedia.org/wiki/Lyra_(rasi_bintang)", huruf: "L", hurufHijaiyah: "ش" },
 
 // Entri Huruf M
-    { id: 300, arab: "سفَع الشمس", transliterasi: "Sufa' ash-Shams", indo: "Bintik Matahari", inggris: "Maculae", definisi: "Bintik gelap di permukaan Matahari akibat aktivitas magnetik.", link: "https://id.wikipedia.org/wiki/Bintik_matahari", huruf: "B", hurufHijaiyah: "س" },
+    { id: 300, arab: "سفَع الشمس", transliterasi: "Safa' ash-Shams", indo: "Bintik Matahari", inggris: "Maculae", definisi: "Bintik gelap di permukaan Matahari akibat aktivitas magnetik.", link: "https://id.wikipedia.org/wiki/Bintik_matahari", huruf: "B", hurufHijaiyah: "س" },
     { id: 301, arab: "سُحُب مجليَّة", transliterasi: "Suḥub Majalliyyah", indo: "Awan Magellan", inggris: "Magellanic clouds", definisi: "Dua galaksi satelit Bimasakti yang terlihat dari belahan selatan.", link: "https://id.wikipedia.org/wiki/Awan_Magellan", huruf: "A", hurufHijaiyah: "س" },
     { id: 302, arab: "تكبير", transliterasi: "Takbīr", indo: "Pembesaran", inggris: "Magnifying", definisi: "Perbesaran bayangan objek langit melalui teleskop.", link: "https://id.wikipedia.org/wiki/Pembesaran", huruf: "P", hurufHijaiyah: "ت" },
     { id: 303, arab: "قَدْر", transliterasi: "Qadr", indo: "Magnitudo", inggris: "Magnitude", definisi: "Tingkat kecerahan benda langit, makin kecil angkanya makin terang.", link: "https://id.wikipedia.org/wiki/Magnitudo_(astronomi)", huruf: "M", hurufHijaiyah: "ق" },
@@ -1105,15 +1152,51 @@ const termsData = [
     { id: 596, arab: "النور البرجي", transliterasi: "an-Nūr al-Burjī", indo: "Cahaya Zodiak", inggris: "Zodiacal light", definisi: "Cahaya samar berbentuk kerucut di ekliptika.", link: "https://id.wikipedia.org/wiki/Cahaya_zodiak", huruf: "Z", hurufHijaiyah: "ن" },
     { id: 597, arab: "المِنطقة", transliterasi: "al-Minṭaqah", indo: "Zona", inggris: "Zone", definisi: "Wilayah atau sabuk pembagian di langit.", link: "https://id.wikipedia.org/wiki/Zona", huruf: "Z", hurufHijaiyah: "م" },
     { id: 598, arab: "زُبرة الاسد", transliterasi: "Zubrat al-Asad", indo: "Zosma", inggris: "Zosma", definisi: "Bintang di rasi Leo.", link: "https://en.wikipedia.org/wiki/Delta_Leonis", huruf: "Z", hurufHijaiyah: "ز" },
+
+// Update Entri Tambahan
+    { id: 599, arab: "فضائي", transliterasi: "Faḍā'ī", indo: "Alien", inggris: "Alien", definisi: "Makhluk hidup hipotetis yang berasal dari luar Bumi.", link: "https://id.wikipedia.org/wiki/Kehidupan_ekstraterestrial", huruf: "A", hurufHijaiyah: "ف" },
+    { id: 600, arab: "طبق طائر", transliterasi: "Ṭabaq Ṭā'ir", indo: "UFO", inggris: "UFO (Unidentified Flying Object)", definisi: "Objek terbang tak dikenal yang belum teridentifikasi sebagai benda langit atau pesawat buatan.", link: "https://id.wikipedia.org/wiki/Benda_terbang_tak_dikenal", huruf: "U", hurufHijaiyah: "ط" },
+    { id: 601, arab: "علم الأطباق الطائرة", transliterasi: "ʿIlm al-Aṭbāq aṭ-Ṭā'irah", indo: "Ufologi", inggris: "Ufology", definisi: "Studi tentang laporan penampakan UFO.", link: "https://id.wikipedia.org/wiki/Ufologi", huruf: "U", hurufHijaiyah: "ع" },
+    { id: 602, arab: "خارج الأرض", transliterasi: "Khārij al-Arḍ", indo: "Ekstraterestrial", inggris: "Extraterrestrial", definisi: "Sesuatu yang berasal dari luar planet Bumi.", link: "https://id.wikipedia.org/wiki/Kehidupan_ekstraterestrial", huruf: "E", hurufHijaiyah: "خ" },
+    { id: 603, arab: "المادة المضادة", transliterasi: "al-Māddah al-Muḍāddah", indo: "Antimateri", inggris: "Antimatter", definisi: "Materi yang tersusun dari antipartikel, akan musnah jika bertemu materi biasa.", link: "https://id.wikipedia.org/wiki/Antimateri", huruf: "A", hurufHijaiyah: "م" },
+    { id: 604, arab: "تشكيل الكواكب", transliterasi: "Tashkīl al-Kawākib", indo: "Terraforming", inggris: "Terraforming", definisi: "Proses hipotetis mengubah planet lain agar layak huni seperti Bumi.", link: "https://id.wikipedia.org/wiki/Terraforming", huruf: "T", hurufHijaiyah: "ت" },
+    { id: 605, arab: "منطقة صالحة للسكن", transliterasi: "Minṭaqah Ṣāliḥah li as-Sakan", indo: "Zona Layak Huni", inggris: "Habitable Zone", definisi: "Wilayah orbit di sekitar bintang yang memungkinkan adanya air cair di permukaan planet.", link: "https://id.wikipedia.org/wiki/Zona_layak_huni", huruf: "Z", hurufHijaiyah: "م" },
+    { id: 606, arab: "مسبار فوياجر", transliterasi: "Misbār Fūyājir", indo: "Voyager", inggris: "Voyager", definisi: "Program NASA yang meluncurkan dua wahana antariksa untuk menjelajah tata surya bagian luar.", link: "https://id.wikipedia.org/wiki/Program_Voyager", huruf: "V", hurufHijaiyah: "م" },
+    { id: 607, arab: "سبوتنيك", transliterasi: "Sbūtnīk", indo: "Sputnik", inggris: "Sputnik", definisi: "Satelit buatan pertama yang diluncurkan Uni Soviet pada tahun 1957.", link: "https://id.wikipedia.org/wiki/Sputnik_1", huruf: "S", hurufHijaiyah: "س" },
+    { id: 608, arab: "سياحة الفضاء", transliterasi: "Siyāḥah al-Faḍā'", indo: "Wisata Antariksa", inggris: "Space Tourism", definisi: "Perjalanan rekreasi ke luar angkasa oleh wisatawan swasta.", link: "https://id.wikipedia.org/wiki/Wisata_antariksa", huruf: "W", hurufHijaiyah: "س" },
+    { id: 609, arab: "قمر نانوي", transliterasi: "Qamar Nānawī", indo: "Nanosatelit", inggris: "Nanosatellite", definisi: "Satelit buatan dengan massa antara 1 hingga 10 kg.", link: "https://en.wikipedia.org/wiki/Small_satellite", huruf: "N", hurufHijaiyah: "ق" },
+    { id: 610, arab: "مبدأ أنثروبي", transliterasi: "Mabdaʾ Anthrūbī", indo: "Prinsip Antropik", inggris: "Anthropic Principle", definisi: "Gagasan bahwa alam semesta harus sesuai dengan keberadaan pengamat cerdas.", link: "https://id.wikipedia.org/wiki/Prinsip_antropik", huruf: "P", hurufHijaiyah: "م" },
+    { id: 611, arab: "أكوان متعددة", transliterasi: "Akwān Mutaʿaddidah", indo: "Multiverse", inggris: "Multiverse", definisi: "Hipotesis bahwa alam semesta kita hanyalah satu dari banyak alam semesta paralel.", link: "https://id.wikipedia.org/wiki/Multiverse", huruf: "M", hurufHijaiyah: "أ" },
+    { id: 612, arab: "كون موازي", transliterasi: "Kawn Muwāzī", indo: "Alam Semesta Paralel", inggris: "Parallel Universe", definisi: "Alam semesta hipotetis yang berdampingan dengan alam semesta kita.", link: "https://id.wikipedia.org/wiki/Alam_semesta_paralel", huruf: "A", hurufHijaiyah: "ك" },
+    { id: 613, arab: "نظرية الأوتار", transliterasi: "Naẓariyyah al-Awtār", indo: "Teori String", inggris: "String Theory", definisi: "Kerangka fisika teoretis yang menyatakan partikel dasar adalah untaian satu dimensi.", link: "https://id.wikipedia.org/wiki/Teori_dawai", huruf: "T", hurufHijaiyah: "ن" },
+    { id: 614, arab: "الانسحاق العظيم", transliterasi: "al-Insḥāq al-ʿAẓīm", indo: "Big Crunch", inggris: "Big Crunch", definisi: "Skenario hipotetis berakhirnya alam semesta dengan keruntuhan gravitasi.", link: "https://id.wikipedia.org/wiki/Big_Crunch", huruf: "B", hurufHijaiyah: "ا" },
+    { id: 615, arab: "التمزق العظيم", transliterasi: "at-Tamazzuq al-ʿAẓīm", indo: "Big Rip", inggris: "Big Rip", definisi: "Skenario berakhirnya alam semesta karena energi gelap merobek semua materi.", link: "https://id.wikipedia.org/wiki/Big_Rip", huruf: "B", hurufHijaiyah: "ت" },
+    { id: 616, arab: "موت حراري", transliterasi: "Mawt Ḥarārī", indo: "Kematian Panas", inggris: "Heat Death", definisi: "Skenario akhir alam semesta saat entropi maksimum dan tidak ada energi yang dapat digunakan.", link: "https://id.wikipedia.org/wiki/Kematian_panas_alam_semesta", huruf: "K", hurufHijaiyah: "م" },
+    { id: 617, arab: "سحابة أورت", transliterasi: "Saḥābah Ūrt", indo: "Awan Oort", inggris: "Oort Cloud", definisi: "Awan bola raksasa berisi miliaran benda es di tepi tata surya.", link: "https://id.wikipedia.org/wiki/Awan_Oort", huruf: "A", hurufHijaiyah: "س" },
+    { id: 618, arab: "الغلاف الشمسي", transliterasi: "al-Ghilāf ash-Shamsī", indo: "Heliosfer", inggris: "Heliosphere", definisi: "Gelembung ruang angkasa yang ditiup oleh angin Matahari.", link: "https://id.wikipedia.org/wiki/Heliosfer", huruf: "H", hurufHijaiyah: "ا" },
+    { id: 619, arab: "حدود الغلاف الشمسي", transliterasi: "Ḥudūd al-Ghilāf ash-Shamsī", indo: "Heliopause", inggris: "Heliopause", definisi: "Batas tempat angin Matahari bertemu dengan medium antarbintang.", link: "https://en.wikipedia.org/wiki/Heliopause", huruf: "H", hurufHijaiyah: "ح" },
+    { id: 620, arab: "انبعاث كتلي إكليلي", transliterasi: "Inbiʿāth Kutlī Iklīlī", indo: "Lontaran Massa Korona", inggris: "Coronal Mass Ejection", definisi: "Ledakan besar plasma dan medan magnet dari korona Matahari.", link: "https://id.wikipedia.org/wiki/Lontaran_massa_korona", huruf: "L", hurufHijaiyah: "ا" },
+    { id: 621, arab: "مساعدة الجاذبية", transliterasi: "Musāʿadah al-Jādhībiyyah", indo: "Bantuan Gravitasi", inggris: "Gravity Assist", definisi: "Teknik manuver wahana antariksa memanfaatkan gravitasi planet untuk mengubah kecepatan.", link: "https://id.wikipedia.org/wiki/Bantuan_gravitasi", huruf: "B", hurufHijaiyah: "م" },
+    { id: 622, arab: "مدار ثابت جغرافياً", transliterasi: "Madār Thābit Jughrāfiyyan", indo: "Orbit Geostasioner", inggris: "Geostationary Orbit", definisi: "Orbit melingkar 35.786 km di atas ekuator, satelit tampak diam dari Bumi.", link: "https://id.wikipedia.org/wiki/Orbit_geostasioner", huruf: "O", hurufHijaiyah: "م" },
+    { id: 623, arab: "مدار قطبي", transliterasi: "Madār Quṭbī", indo: "Orbit Polar", inggris: "Polar Orbit", definisi: "Orbit satelit yang melewati kedua kutub Bumi.", link: "https://en.wikipedia.org/wiki/Polar_orbit", huruf: "O", hurufHijaiyah: "م" },
+    { id: 624, arab: "سرعة الإفلات", transliterasi: "Surʿah al-Iflāt", indo: "Kecepatan Lepas", inggris: "Escape Velocity", definisi: "Kecepatan minimum untuk melepaskan diri dari gravitasi benda langit.", link: "https://id.wikipedia.org/wiki/Kecepatan_lepas", huruf: "K", hurufHijaiyah: "س" },
+    { id: 625, arab: "درع حراري", transliterasi: "Dirʿ Ḥarārī", indo: "Pelindung Panas", inggris: "Heat Shield", definisi: "Lapisan pelindung yang melindungi wahana antariksa dari panas saat masuk atmosfer.", link: "https://id.wikipedia.org/wiki/Perisai_panas", huruf: "P", hurufHijaiyah: "د" },
+    { id: 626, arab: "السير في الفضاء", transliterasi: "as-Sayr fī al-Faḍā'", indo: "Jalan Antariksa", inggris: "Spacewalk", definisi: "Aktivitas astronot keluar dari wahana antariksa di orbit.", link: "https://id.wikipedia.org/wiki/Kegiatan_luar_wahana", huruf: "J", hurufHijaiyah: "ا" },
 ];
 
 // ===================== FUNGSI RENDER =====================
 function dapatkanDataTerfilter() {
     let filtered = termsData.filter(item => {
+        // 1) Filter huruf (existing)
         if (hurufTerpilih) {
             if (modeSortHuruf === "latin" && item.huruf !== hurufTerpilih) return false;
             if (modeSortHuruf === "hijaiyah" && item.hurufHijaiyah !== hurufTerpilih) return false;
         }
+        // 2) Filter kategori astronomi (BARU)
+        if (kategoriTerpilih.length > 0) {
+            if (!kategoriTerpilih.includes(kategorikanIstilah(item))) return false;
+        }
+        // 3) Filter pencarian (existing)
         if (kataKunciPencarian) {
             const keyword = kataKunciPencarian.toLowerCase();
             return item.indo.toLowerCase().includes(keyword) ||
@@ -2044,12 +2127,154 @@ document.querySelectorAll('.toggle-password').forEach(btn => {
     });
 });
 
+// ===================== FILTER KATEGORI ASTRONOMI =====================
+const filterOverlay = document.getElementById('filterOverlay');
+const filterPanel = document.getElementById('filterPanel');
+const filterPanelBody = document.getElementById('filterPanelBody');
+const filterToggleBtn = document.getElementById('filterToggleBtn');
+const filterPanelClose = document.getElementById('filterPanelClose');
+const filterResetBtn = document.getElementById('filterResetBtn');
+const filterApplyBtn = document.getElementById('filterApplyBtn');
+const filterBadge = document.getElementById('filterBadge');
+const activeFilterTags = document.getElementById('activeFilterTags');
+
+// Hitung jumlah entri per kategori (precompute sekali)
+const kategoriCount = (() => {
+    const counts = {};
+    KATEGORI_ASTRONOMI.forEach(k => counts[k.key] = 0);
+    termsData.forEach(item => {
+        counts[kategorikanIstilah(item)]++;
+    });
+    return counts;
+})();
+
+// Render opsi checkbox di dalam panel
+function renderPanelOpsi() {
+    if (!filterPanelBody) return;
+    filterPanelBody.innerHTML = KATEGORI_ASTRONOMI.map(kat => `
+        <label class="filter-option ${kategoriTerpilih.includes(kat.key) ? 'checked' : ''}" data-cat="${kat.key}">
+            <input type="checkbox" value="${kat.key}" ${kategoriTerpilih.includes(kat.key) ? 'checked' : ''}>
+            <span class="filter-emoji">${kat.emoji}</span>
+            <span>${kat.label}</span>
+            <span class="filter-count">${kategoriCount[kat.key]}</span>
+        </label>
+    `).join('');
+
+    filterPanelBody.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+            cb.closest('.filter-option').classList.toggle('checked', cb.checked);
+        });
+    });
+    filterPanelBody.querySelectorAll('.filter-option').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'INPUT') {
+                const cb = opt.querySelector('input');
+                cb.checked = !cb.checked;
+                opt.classList.toggle('checked', cb.checked);
+            }
+        });
+    });
+}
+
+// Buka / tutup panel
+function openFilterPanel() {
+    renderPanelOpsi();
+    filterPanel.classList.add('show');
+    filterOverlay.classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+function closeFilterPanel() {
+    filterPanel.classList.remove('show');
+    filterOverlay.classList.remove('show');
+    document.body.style.overflow = '';
+}
+
+if (filterToggleBtn) filterToggleBtn.addEventListener('click', openFilterPanel);
+if (filterPanelClose) filterPanelClose.addEventListener('click', closeFilterPanel);
+if (filterOverlay) filterOverlay.addEventListener('click', closeFilterPanel);
+
+// Terapkan filter
+if (filterApplyBtn) {
+    filterApplyBtn.addEventListener('click', () => {
+        const checked = [...filterPanelBody.querySelectorAll('input[type="checkbox"]:checked')]
+            .map(cb => cb.value);
+        kategoriTerpilih = checked;
+        halamanSekarang = 1; // reset ke halaman 1
+        updateFilterUI();
+        closeFilterPanel();
+        renderApp();
+    });
+}
+
+// Reset dari dalam panel
+if (filterResetBtn) {
+    filterResetBtn.addEventListener('click', () => {
+        filterPanelBody.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+            cb.closest('.filter-option').classList.remove('checked');
+        });
+        kategoriTerpilih = [];
+        halamanSekarang = 1;
+        updateFilterUI();
+        renderApp();
+    });
+}
+
+// Update badge + tag aktif
+function updateFilterUI() {
+    // Badge di tombol
+    if (filterBadge) {
+        if (kategoriTerpilih.length > 0) {
+            filterBadge.textContent = kategoriTerpilih.length;
+            filterBadge.classList.remove('hidden');
+            filterToggleBtn.classList.add('has-active');
+        } else {
+            filterBadge.classList.add('hidden');
+            filterToggleBtn.classList.remove('has-active');
+        }
+    }
+    // Tag di bawah sort bar
+    if (activeFilterTags) {
+        activeFilterTags.innerHTML = kategoriTerpilih.map(key => {
+            const kat = KATEGORI_ASTRONOMI.find(k => k.key === key);
+            if (!kat) return '';
+            return `<div class="active-filter-tag">
+                <span>${kat.emoji} ${kat.label}</span>
+                <span class="remove-tag" data-cat="${key}" title="Hapus filter">✕</span>
+            </div>`;
+        }).join('');
+
+        activeFilterTags.querySelectorAll('.remove-tag').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const cat = btn.dataset.cat;
+                kategoriTerpilih = kategoriTerpilih.filter(k => k !== cat);
+                halamanSekarang = 1;
+                updateFilterUI();
+                renderApp();
+            });
+        });
+    }
+}
+
+// Tutup panel otomatis saat pindah halaman
+const _originalGantiHalaman = gantiHalaman;
+gantiHalaman = function(targetHalaman, tombolAktif) {
+    if (filterPanel && filterPanel.classList.contains('show')) {
+        closeFilterPanel();
+    }
+    return _originalGantiHalaman.call(this, targetHalaman, tombolAktif);
+};
+
 // ===================== INISIALISASI =====================
 loadSession().then(() => {
     gantiHalaman(halamanHome, navLinkHome);
     if (footerElement) footerElement.style.display = 'block';
     updateFavCounter();
     createParticles('.floating-particles', 30);
+
+    // Inisialisasi filter kategori
+    renderPanelOpsi();
+    updateFilterUI();
 
     // Setup dropdown login
     setupLoginButton('loginBtnHeader', 'loginDropdownHeader');
