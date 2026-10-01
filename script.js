@@ -1323,7 +1323,13 @@ function bukaFokus(card) {
 function tampilkanHalaman(dataTerfilter) {
     tutupKartuFokus();
     container.innerHTML = "";
-    if (entriCountText) entriCountText.innerHTML = `📚 Total entri: ${dataTerfilter.length}`;
+    if (entriCountText) {
+    const isNarrow = window.matchMedia('(max-width: 480px)').matches;
+    entriCountText.innerHTML = isNarrow
+        ? `📚 ${dataTerfilter.length}`
+        : `📚 Total entri: ${dataTerfilter.length}`;
+    }
+
     if (dataTerfilter.length === 0) {
         container.classList.remove('rtl-grid');
         const keyword = kataKunciPencarian || '';
