@@ -13,7 +13,6 @@
 
 <body>
     <div class="animation-bg" id="animation-bg"></div>
-    <!-- TAMBAHAN: wadah partikel mengambang -->
     <div class="floating-particles"></div>
     
     <div class="main-screen">
@@ -118,10 +117,15 @@
                     </button>
                     <div class="alfabet-filter" id="alfabetFilter">
                     </div>
+                    <button class="filter-toggle-btn" id="filterToggleBtn" title="Filter">
+                        <i class="fas fa-filter"></i>
+                        <span class="filter-badge hidden" id="filterBadge">0</span>
+                    </button>
                     <div class="entri-count" id="entriCount">
                         📚 Total entri: ${total}
                     </div>
                 </div>
+                <div class="active-filter-tags" id="activeFilterTags"></div>
                 <div class="dynamic-view"></div>
             </main>
 
@@ -312,6 +316,21 @@
         <div class="modal-content">
             <span class="close-modal" id="closeDetailModal">&times;</span>
             <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Filter Istilah-->
+    <div class="filter-overlay" id="filterOverlay"></div>
+
+    <div class="filter-panel" id="filterPanel">
+        <div class="filter-panel-header">
+            <h3><i class="fas fa-filter"></i> Filter Kategori</h3>
+            <button class="filter-panel-close" id="filterPanelClose" aria-label="Tutup">&times;</button>
+        </div>
+        <div class="filter-panel-body" id="filterPanelBody"></div>
+        <div class="filter-panel-actions">
+            <button class="filter-reset-btn" id="filterResetBtn">Reset</button>
+            <button class="filter-apply-btn" id="filterApplyBtn">Terapkan</button>
         </div>
     </div>
 
